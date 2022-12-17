@@ -1,0 +1,212 @@
+#!/bin/bash
+function adaugare(){
+echo "===============================================================================" > masini123.txt
+x=0
+while [[ $x -eq 0 ]]
+do
+	echo "introduceti marca masinii"
+ 		read marca
+		echo "Marca masinii: $marca" >> masini123.txt 
+	echo "introduceti tipul de cutie de viteze a masinii"
+		read cutie 
+		echo "tipul de cutie: $cutie" >> masini123.txt
+	echo "introduceti motorizarea masinii"
+		read motorizare
+		echo "Motorizare masina: $motorizare" >> masini123.txt
+	echo "introduceti tipul de caroserie"
+		read caroserie
+		echo "Tip de caroserie $caroserie">> masini123.txt
+echo "===============================================================================">>masini123.txt
+	cat masini123.txt >> masini.txt
+	echo "Doriti sa mai adaugati si alte masini ?[Y\N]"
+		read rasp10
+		if [ $rasp10 = "Y" -o $rasp10 = "y" ]
+		then
+		continue
+			else
+			x=1
+			break
+		fi
+done
+}
+
+
+function view()
+{ echo "inserati fisierul pe care doriti sa-l vedeti (masini.txt)"
+read fis
+ cat $fis
+}
+
+
+function delete()
+{ echo "introduceti marca masinii pe care doriti sa o stergeti "
+read x
+y=0
+N=$(grep -n $x masini.txt | cut -d : -f 1)
+#                         ^
+#  comanda de tip pipe    |  comanda din stanga afiseaza linia pe care apare $x si cea din dreapta taie afisarea la doar primul caracter adica nr liniei
+while [[ $y -eq 0 ]]
+do
+if [[ $N -eq 0 ]]
+then
+  echo "aceasta marca nu este in fisier.Incheiere"
+	y=1
+
+else
+  sed -i "${N}d;${N+1}d;${N+2}d;${N+3}d;${N+4}d;${N+5}d" masini.txt
+	      echo "Doriti sa continuati stergerea ?[Y\N]"
+		read rasp6
+		if [ $rasp6 = "Y" -o $rasp6 = "y" ]
+			then
+			echo "introduceti noua marca pe care vreti sa o stergeti"
+				read x
+			else
+				y=1;
+				break
+			fi
+#-i = in place editing, by default sed afiseaza output-ul,sed -i editeaza fisierul si nu afiseaza output
+fi
+done
+}
+function modify()
+{ echo " Ce marca  doriti sa modificati ? "
+   read marca
+ echo " ce doriti sa modificati ?"
+ echo " Puteti alege din: "
+ echo " 1-Tipul de cutie de viteze "
+ echo " 2-Tipul de motorizare"
+ echo " 3-Tipul de caroserie"
+ echo " Introduceti cifra: "
+ 
+x=0
+ read tip
+
+q=$(grep -n $marca masini.txt | cut -d : -f 1)
+while [[ $x -eq 0 ]]
+do
+if [[ $q -eq 0 ]]
+then 
+	echo "aceasta marca nu este in fisier.incheiere"
+	break
+
+elif [[ $tip -eq 1 ]]
+then
+	echo "introduceti noul tip de cutie de viteze"
+	read new
+	sed "/$marca/{n;s/.*/\"Tipul de cutie de viteze:$new\"/;}/" masini.txt > masini123.txt
+	cat masini123.txt > masini.txt
+	echo "Modificare cu succes"
+	echo "Doriti sa continuati ? [Y/N]"
+	read rasp
+ 	if [ $rasp = "Y" -o $rasp = "y" ]
+		then
+		echo	"introduceti noul tip de modificat"
+			read tip
+	else
+		break
+	fi
+elif [[ $tip -eq 2 ]]
+then	
+echo "introduceti noul tip de motorizare"
+	read new1
+	sed "/$marca/{n;n;s/.*/\"Tipul de motorizare:$new1\"/;}" masini.txt > masini123.txt
+	cat masini123.txt > masini.txt
+        echo "Modificare cu succes"
+	echo "Doriti sa continuati ? [Y/N]"
+        read rasp
+        if [ $rasp = "Y" -o $rasp = "y" ]
+                then
+            echo    "introduceti noul tip de modificat"
+                        read tip
+        else
+                break
+        fi
+
+elif [[ $tip -eq 3 ]]
+then
+	echo "introduceti noul tip de caroserie"
+	read new2
+	sed "/$marca/{n;n;n;s/.*/\"Tipul de caroserie:$new2\"/;}" masini.txt > masini123.txt
+	cat masini123.txt > masini.txt
+        echo "Modificare cu succes"
+	echo "Doriti sa continuati ? [Y/N]"
+        read rasp
+        if [ $rasp = "Y" -o $rasp = "y" ]
+                then
+            echo    "introduceti noul tip de modificat"
+                        read tip
+        else
+                break
+        fi
+
+
+#daca vrem sa inlocuim cu ceva citit de la tastatura, acel ceva trebuie pus intre \ si \, eventual " \ \ "
+else
+echo "cifra introdusa nu reprezinta un tip"
+ echo "doriti sa reintroduceti cifra? [Y\N]"
+	read rasp15
+	if [ $rasp15 = "N" -o $rasp15 = "n" ]
+	then
+		break
+	else
+ echo "Puteti alege din urmatoarele modificari:"
+ echo " 1-Tipul de cutie de viteze "
+ echo " 2-Tipul de motorizare"
+ echo " 3-Tipul de caroserie"
+ echo " Introduceti cifra: "
+	read tip
+	fi
+#s- pentru inlocuirea unui string, .* este string ul pe care il inlocuim in acest caz toata linia si urmatorul este stringul cu care vrem sa inlocuim
+fi
+done
+}
+
+
+function search()
+{ echo "ce marca doriti sa cautati?"
+read marca
+x=0
+q=$(grep -n $marca masini.txt | cut -d : -f 1)
+while [[ $x -eq 0 ]]
+do
+if [[ $q -eq 0 ]]
+then
+ 	echo " nu exista. terminare program"
+	break
+else
+	sed -n "/$marca/{n;p}" masini.txt
+	sed -n "/$marca/{n;n;p}" masini.txt
+	sed -n "/$marca/{n;n;n;p}" masini.txt
+	echo "Doriti sa continuati cu alta cautare ?[Y\N]"
+		read rasp2
+		if [ $rasp2 = "Y" -o $rasp2 = "y" ]
+		then
+			echo "introduceti alta marca"
+				read marca
+			else
+			x=1
+				break
+		fi
+fi
+done
+
+}
+select OPTION in  view add delete update search out
+do
+	case $OPTION in
+	view) view
+	;;
+	add)adaugare
+	;;
+	delete)delete
+	;;
+	update)modify
+	;;
+	search)search
+	;;
+	out) echo "iesire din meniu"; exit 0;;
+	*) echo "Eroare: Selectie invalida";;
+	esac
+done
+
+
